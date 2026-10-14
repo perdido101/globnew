@@ -15,5 +15,22 @@ services:
       interval: 2s
       timeout: 3s
       retries: 30
+  # Full stack in containers: `docker compose --profile full up --build` → http://localhost:8787
+  app:
+    profiles: [full]
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://globalwire:globalwire@db:5432/globalwire
+      IMAGE_PROXY_SECRET: ${IMAGE_PROXY_SECRET:-change-me}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      REDDIT_CLIENT_ID: ${REDDIT_CLIENT_ID:-}
+      REDDIT_CLIENT_SECRET: ${REDDIT_CLIENT_SECRET:-}
+      REDDIT_USER_AGENT: ${REDDIT_USER_AGENT:-}
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-}
+    ports:
+      - "8787:8787"
 volumes:
   gw_pg:

@@ -2,6 +2,7 @@ import { CATEGORY_LABELS, type ClusterView } from '@gw/shared';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect } from 'react';
 import { api } from '../lib/api';
+import { DEMO } from '../lib/demo';
 import { fmtCoord, utcHHMM } from '../lib/time';
 import { useStore } from '../store/useStore';
 import { CategoryChip, LocationTag, RelTime, SourceBadge, UnverifiedTag } from './Badges';
@@ -48,7 +49,7 @@ function Body({ c }: { c: ClusterView }) {
       </div>
       <div className="scroll-thin min-h-0 flex-1 overflow-y-auto">
         <div className="flex gap-3 px-4 pt-4">
-          <Thumb src={c.thumb} size={84} />
+          {(c.thumb || !DEMO) && <Thumb src={c.thumb} size={84} />}
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-mut">
               <span>{c.sourceType === 'reddit' && c.subreddit ? `r/${c.subreddit}` : c.outlet}</span>

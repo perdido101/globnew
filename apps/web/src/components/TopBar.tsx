@@ -1,5 +1,6 @@
 import { REGIONS, regionByKey } from '@gw/shared';
 import { useEffect, useRef, useState } from 'react';
+import { DEMO } from '../lib/demo';
 import { flyTo } from '../lib/globeRef';
 import { utcClock } from '../lib/time';
 import { useStore } from '../store/useStore';
@@ -15,6 +16,13 @@ function Status() {
   const status = useStore((s) => s.status);
   const paused = useStore((s) => s.settings.paused);
   const replay = useStore((s) => !!s.replay);
+  if (DEMO && !replay && !paused)
+    return (
+      <span className="flex items-center gap-1.5" title="Static demo: a recorded snapshot replayed in your browser. Run the full app for live news.">
+        <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber" />
+        <span className="mono text-[10.5px] tracking-[0.14em] text-amber">DEMO · RECORDED</span>
+      </span>
+    );
   const label = replay ? 'REPLAY' : paused ? 'PAUSED' : status === 'live' ? 'LIVE' : status === 'offline' ? 'OFFLINE' : status === 'reconnecting' ? 'RECONNECTING' : 'CONNECTING';
   const color = replay || paused ? '#F2A93B' : status === 'live' ? '#6E9C7A' : status === 'offline' ? '#B5655B' : '#F2A93B';
   return (
@@ -104,11 +112,13 @@ export function TopBar() {
         <span className="mono text-[12px] tabular-nums text-fg">{stats?.itemsLastHour ?? '—'}</span>
         <span className="micro">Stories/h</span>
         <span className="mono text-[12px] tabular-nums text-fg">{stats?.clustersLastHour ?? '—'}</span>
-        <span className="micro">Sources</span>
-        <span className="mono text-[12px] tabular-nums text-fg">
-          {stats ? `${stats.sourcesOk}/${stats.sourcesTotal}` : '—'}
-        </span>
-        {stats && !stats.llmEnabled && (
+        {!DEMO && (
+          <>
+            <span className="micro">Sources</span>
+            <span className="mono text-[12px] tabular-nums text-fg">{stats ? `${stats.sourcesOk}/${stats.sourcesTotal}` : '—'}</span>
+          </>
+        )}
+        {stats && !stats.llmEnabled && !DEMO && (
           <span className="mono text-[10px] text-dim" title="ANTHROPIC_API_KEY not set — heuristic enrichment only">
             HEURISTIC
           </span>

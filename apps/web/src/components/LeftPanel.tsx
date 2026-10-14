@@ -1,6 +1,7 @@
 import { CATEGORIES, CATEGORY_COLORS, CATEGORY_LABELS, REGIONS, SOURCE_TYPES, type SourceType } from '@gw/shared';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { api } from '../lib/api';
+import { DEMO } from '../lib/demo';
 import { DEFAULT_SETTINGS } from '../store/settings';
 import { useStore } from '../store/useStore';
 
@@ -151,9 +152,15 @@ export function LeftPanel() {
       </Section>
 
       <div className="px-3 py-3">
+        {DEMO ? (
+          <a href="https://github.com/perdido101/globnew" target="_blank" rel="noreferrer" className="mono text-[10.5px] text-dim hover:text-fg">
+            RECORDED DEMO · RUN THE LIVE APP ↗
+          </a>
+        ) : (
         <a href="/admin/sources" target="_blank" rel="noreferrer" className="mono text-[10.5px] text-dim hover:text-fg">
           SOURCE HEALTH ↗
         </a>
+        )}
       </div>
     </div>
   );

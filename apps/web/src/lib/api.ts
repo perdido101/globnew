@@ -1,4 +1,5 @@
 import type { ClusterView, FlowFilters, TimelineBucket } from '@gw/shared';
+import { DEMO, demoApi } from './demo';
 
 async function get<T>(url: string): Promise<T> {
   const res = await fetch(url);
@@ -6,7 +7,7 @@ async function get<T>(url: string): Promise<T> {
   return (await res.json()) as T;
 }
 
-export const api = {
+const liveApi = {
   cluster: (id: string) => get<ClusterView>(`/api/cluster/${encodeURIComponent(id)}`),
   clusters: (from: Date, to: Date, minImportance = 0) =>
     get<ClusterView[]>(`/api/clusters?from=${from.toISOString()}&to=${to.toISOString()}&limit=150&minImportance=${minImportance}`),
@@ -21,3 +22,5 @@ export const api = {
       body: JSON.stringify(filters),
     }).then((r) => r.ok),
 };
+
+export const api: typeof liveApi = DEMO ? (demoApi as unknown as typeof liveApi) : liveApi;

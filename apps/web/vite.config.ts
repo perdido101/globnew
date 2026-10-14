@@ -5,6 +5,8 @@ import { defineConfig } from 'vite';
 const api = process.env.GW_API ?? `http://localhost:${process.env.PORT ?? 8787}`;
 
 export default defineConfig({
+  // GitHub Pages serves the demo from /<repo>/.
+  base: process.env.VITE_BASE ?? '/',
   plugins: [react(), tailwindcss()],
   server: {
     port: 5173,

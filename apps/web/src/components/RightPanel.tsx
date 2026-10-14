@@ -2,6 +2,7 @@ import type { ClusterView } from '@gw/shared';
 import { CATEGORY_COLORS } from '@gw/shared';
 import { useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
+import { DEMO } from '../lib/demo';
 import { flyTo } from '../lib/globeRef';
 import { utcHHMM } from '../lib/time';
 import { inFocus, passesClient, useStore } from '../store/useStore';
@@ -45,7 +46,7 @@ function FeedRow({ c }: { c: ClusterView }) {
           <LocationTag place={c.geo?.place} country={c.geo?.country} />
         </div>
       </div>
-      <Thumb src={c.thumb} size={40} className="hidden xl:block" />
+      {(c.thumb || !DEMO) && <Thumb src={c.thumb} size={40} className="hidden xl:block" />}
     </button>
   );
 }

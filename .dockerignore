@@ -1,0 +1,8 @@
+**/node_modules
+**/dist
+dist-pages
+.env
+.git
+apps/server/data/cache
+apps/server/data/geonames/*.txt
+docs

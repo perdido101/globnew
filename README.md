@@ -4,6 +4,8 @@ A calm, continuous flow of world news on an interactive 3D globe. Stories from 6
 Reddit and public Telegram channels are geolocated to **where they happen**, clustered across outlets, scored, and
 released onto the globe at a steady cadence — each marker grows a thin leader line to a compact card.
 
+**Demo:** https://perdido101.github.io/globnew/ — a recorded snapshot replayed in your browser (static, no live news).
+
 ![layout: filters · globe · live feed · 24h timeline](docs/screenshot.png)
 
 ## Quick start
@@ -129,5 +131,27 @@ pnpm geo:download  # (re)download GeoNames data
 ```
 
 Production: `pnpm build`, then `pnpm --filter @gw/server start` serves the API and the built web app on one port.
+
+## Deploy
+
+### Live app (server + Postgres)
+
+The `Dockerfile` builds one image that runs the API, ingestion workers and the built web UI on `PORT` (default 8787).
+It needs `DATABASE_URL`; migrations run on boot and the gazetteer is baked into the image.
+
+- **Render:** *New → Blueprint* → select this repo. `render.yaml` creates the web service and a Postgres database and
+  generates `IMAGE_PROXY_SECRET` / `ADMIN_TOKEN`; fill in `ANTHROPIC_API_KEY` and the Reddit keys if you have them.
+  Free instances sleep when idle (ingestion pauses until the next visit) — use the `starter` plan for a 24/7 flow.
+- **Any Docker host (Fly.io, Railway, a VPS…):** build the image, provide `DATABASE_URL` and the optional variables
+  from `.env.example`, expose the port, health check `GET /health`.
+- **Self-host:** `docker compose --profile full up --build` → http://localhost:8787
+
+### Static demo (GitHub Pages)
+
+`.github/workflows/pages.yml` builds the web app with `VITE_DEMO=1`, which swaps the SSE stream and API for an
+in-browser replay of `apps/web/public/demo/snapshot.json` (same release queue, filters, focus, search and timeline).
+One-time setup: repo **Settings → Pages → Source: GitHub Actions**. Refresh the recording from a running server with
+`node scripts/make-demo-snapshot.mjs [http://localhost:8787]` and push. The snapshot stores headlines, ≤ 200-char
+snippets and links only; publisher images are not included in the public demo.
 
 See **DECISIONS.md** for defaults chosen, dropped feeds and known limitations.

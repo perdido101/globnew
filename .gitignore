@@ -6,3 +6,4 @@ apps/server/data/geonames/*.txt
 apps/server/data/geonames/*.zip
 apps/server/data/cache
 .DS_Store
+dist-pages

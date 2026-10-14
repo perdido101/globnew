@@ -1,0 +1,32 @@
+# Render Blueprint: one web service (Docker) + Postgres.
+# New → Blueprint → pick this repo. Free web services sleep after ~15 min idle (ingestion pauses until the next visit);
+# use plan: starter to keep the flow running 24/7.
+services:
+  - type: web
+    name: global-wire
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: global-wire-db
+          property: connectionString
+      - key: IMAGE_PROXY_SECRET
+        generateValue: true
+      - key: ADMIN_TOKEN
+        generateValue: true
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: REDDIT_CLIENT_ID
+        sync: false
+      - key: REDDIT_CLIENT_SECRET
+        sync: false
+      - key: REDDIT_USER_AGENT
+        sync: false
+
+databases:
+  - name: global-wire-db
+    plan: free
+    databaseName: globalwire
+    user: globalwire

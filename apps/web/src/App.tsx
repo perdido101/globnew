@@ -13,6 +13,7 @@ import { CardLayer } from './globe/CardLayer';
 import { GlobeView } from './globe/GlobeView';
 import { useMedia } from './hooks/useMedia';
 import { useShortcuts } from './hooks/useShortcuts';
+import { connectDemo, DEMO } from './lib/demo';
 import { connectStream } from './lib/stream';
 import { useStore } from './store/useStore';
 
@@ -24,7 +25,7 @@ export function App() {
   const [cursor, setCursor] = useState<{ lat: number; lng: number } | null>(null);
   useShortcuts();
 
-  useEffect(() => connectStream(), []);
+  useEffect(() => (DEMO ? connectDemo() : connectStream()), []);
   useEffect(() => {
     const t = setInterval(() => useStore.getState().tick(), 1000);
     return () => clearInterval(t);
