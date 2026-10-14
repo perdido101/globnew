@@ -1,0 +1,21 @@
+{
+  "name": "global-wire",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "packageManager": "pnpm@10.28.0",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "db:up": "docker compose up -d db",
+    "db:migrate": "pnpm --filter @gw/server db:migrate",
+    "db:generate": "pnpm --filter @gw/server db:generate",
+    "geo:download": "pnpm --filter @gw/server geo:download",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "typescript": "^5.7.3"
+  }
+}

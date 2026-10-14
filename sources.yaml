@@ -1,0 +1,123 @@
+# GLOBAL WIRE sources. Edit freely — the server hot-reloads this file.
+# Fields: type (news|gdelt|reddit|telegram), name, url (news), handle (reddit/telegram), query (gdelt),
+#         region, country (ISO2 of the outlet — a disambiguation hint only, never used as the story location),
+#         lang, weight (0..1, source quality), enabled, intervalSec (optional), minVelocity (reddit/telegram, optional).
+# RSS feeds below were verified on 2026-10-14 (see DECISIONS.md for dropped feeds).
+sources:
+
+  # ── Global ──
+  - { type: news, name: "BBC News - World", url: "https://feeds.bbci.co.uk/news/world/rss.xml", region: global, country: GB, lang: en, weight: 1.0 }
+  - { type: news, name: "Al Jazeera English", url: "https://www.aljazeera.com/xml/rss/all.xml", region: global, country: QA, lang: en, weight: 1.0 }
+  - { type: news, name: "The Guardian - World", url: "https://www.theguardian.com/world/rss", region: global, country: GB, lang: en, weight: 1.0 }
+  - { type: news, name: "New York Times - World", url: "https://rss.nytimes.com/services/xml/rss/nyt/World.xml", region: global, country: US, lang: en, weight: 1.0 }
+  - { type: news, name: "NPR - World", url: "https://feeds.npr.org/1004/rss.xml", region: global, country: US, lang: en, weight: 1.0 }
+  - { type: news, name: "Deutsche Welle - World", url: "https://rss.dw.com/xml/rss-en-world", region: global, country: DE, lang: en, weight: 1.0 }
+  - { type: news, name: "France 24 English", url: "https://www.france24.com/en/rss", region: global, country: FR, lang: en, weight: 1.0 }
+  - { type: news, name: "Euronews", url: "https://www.euronews.com/rss?level=theme&name=news", region: global, country: FR, lang: en, weight: 1.0 }
+  - { type: news, name: "Bloomberg Politics", url: "https://feeds.bloomberg.com/politics/news.rss", region: global, country: US, lang: en, weight: 1.0 }
+  - { type: news, name: "Bloomberg Markets", url: "https://feeds.bloomberg.com/markets/news.rss", region: global, country: US, lang: en, weight: 0.8 }
+  - { type: news, name: "Financial Times - World", url: "https://www.ft.com/world?format=rss", region: global, country: GB, lang: en, weight: 1.0 }
+  - { type: news, name: "Wall Street Journal - World", url: "https://feeds.content.dowjones.io/public/rss/RSSWorldNews", region: global, country: US, lang: en, weight: 1.0 }
+  - { type: news, name: "UPI - World", url: "https://rss.upi.com/news/world_news.rss", region: global, country: US, lang: en, weight: 0.8 }
+  - { type: news, name: "Sky News - World", url: "https://feeds.skynews.com/feeds/rss/world.xml", region: global, country: GB, lang: en, weight: 0.8 }
+  - { type: news, name: "Anadolu Agency - World", url: "https://www.aa.com.tr/en/rss/default?cat=world", region: global, country: TR, lang: en, weight: 0.8 }
+
+  # ── Europe ──
+  - { type: news, name: "Kyiv Independent", url: "https://kyivindependent.com/news-archive/rss/", region: europe, country: UA, lang: en, weight: 0.8 }
+  - { type: news, name: "Kathimerini (Greek)", url: "https://www.kathimerini.gr/infeeds/rss/nx-rss-feed.xml", region: europe, country: GR, lang: el, weight: 0.8 }
+  - { type: news, name: "ERT News", url: "https://www.ertnews.gr/feed/", region: europe, country: GR, lang: el, weight: 0.8 }
+  - { type: news, name: "The Moscow Times", url: "https://www.themoscowtimes.com/rss/news", region: europe, country: RU, lang: en, weight: 0.8 }
+  - { type: news, name: "Meduza (English)", url: "https://meduza.io/rss/en/all", region: europe, country: RU, lang: en, weight: 0.8 }
+  # Balkan Insight: robots.txt disallows /feed/ for generic crawlers — disabled to respect it.
+  - { type: news, name: "Balkan Insight", url: "https://balkaninsight.com/feed/", region: europe, country: RS, lang: en, weight: 0.6, enabled: false }
+  - { type: news, name: "Notes from Poland", url: "https://notesfrompoland.com/feed/", region: europe, country: PL, lang: en, weight: 0.6 }
+  - { type: news, name: "Le Monde in English - Intl", url: "https://www.lemonde.fr/en/international/rss_full.xml", region: europe, country: FR, lang: en, weight: 0.8 }
+  - { type: news, name: "The Irish Times - News", url: "https://www.irishtimes.com/arc/outboundfeeds/feed-irish-news/?outputType=xml", region: europe, country: IE, lang: en, weight: 0.6 }
+
+  # ── Middle East ──
+  - { type: news, name: "Haaretz English", url: "https://www.haaretz.com/srv/haaretz-latest-headlines", region: middle-east, country: IL, lang: en, weight: 0.8 }
+  - { type: news, name: "Middle East Eye", url: "https://www.middleeasteye.net/rss", region: middle-east, country: GB, lang: en, weight: 0.8 }
+  - { type: news, name: "Al-Monitor", url: "https://www.al-monitor.com/rss", region: middle-east, country: US, lang: en, weight: 0.8 }
+  - { type: news, name: "Arab News", url: "https://www.arabnews.com/rss.xml", region: middle-east, country: SA, lang: en, weight: 0.8 }
+  - { type: news, name: "The National (UAE)", url: "https://www.thenationalnews.com/arc/outboundfeeds/rss/?outputType=xml", region: middle-east, country: AE, lang: en, weight: 0.8 }
+  - { type: news, name: "Jerusalem Post", url: "https://www.jpost.com/rss/rssfeedsfrontpage.aspx", region: middle-east, country: IL, lang: en, weight: 0.8 }
+
+  # ── Asia ──
+  - { type: news, name: "South China Morning Post - World", url: "https://www.scmp.com/rss/5/feed/", region: asia, country: HK, lang: en, weight: 0.8 }
+  - { type: news, name: "South China Morning Post - News", url: "https://www.scmp.com/rss/91/feed/", region: asia, country: HK, lang: en, weight: 0.8 }
+  - { type: news, name: "The Japan Times", url: "https://www.japantimes.co.jp/feed/", region: asia, country: JP, lang: en, weight: 0.8 }
+  - { type: news, name: "Times of India - World", url: "https://timesofindia.indiatimes.com/rssfeeds/296589292.cms", region: asia, country: IN, lang: en, weight: 0.8 }
+  - { type: news, name: "The Hindu - International", url: "https://www.thehindu.com/news/international/feeder/default.rss", region: asia, country: IN, lang: en, weight: 0.8 }
+  - { type: news, name: "The Straits Times - World", url: "https://www.straitstimes.com/news/world/rss.xml", region: asia, country: SG, lang: en, weight: 0.8 }
+  - { type: news, name: "The Straits Times - Asia", url: "https://www.straitstimes.com/news/asia/rss.xml", region: asia, country: SG, lang: en, weight: 0.8 }
+  - { type: news, name: "CNA - Asia", url: "https://www.channelnewsasia.com/api/v1/rss-outbound-feed?_format=xml&category=6511", region: asia, country: SG, lang: en, weight: 0.8 }
+  - { type: news, name: "CNA - World", url: "https://www.channelnewsasia.com/api/v1/rss-outbound-feed?_format=xml&category=6311", region: asia, country: SG, lang: en, weight: 0.8 }
+  - { type: news, name: "Yonhap News (English)", url: "https://en.yna.co.kr/RSS/news.xml", region: asia, country: KR, lang: en, weight: 0.8 }
+  - { type: news, name: "The Korea Herald", url: "https://www.koreaherald.com/rss/newsAll", region: asia, country: KR, lang: en, weight: 0.6 }
+  - { type: news, name: "The Korea Times - World", url: "https://feed.koreatimes.co.kr/k/world.xml", region: asia, country: KR, lang: en, weight: 0.6 }
+  - { type: news, name: "Japan Today", url: "https://japantoday.com/feed", region: asia, country: JP, lang: en, weight: 0.6 }
+  - { type: news, name: "Dawn - World", url: "https://www.dawn.com/feeds/world", region: asia, country: PK, lang: en, weight: 0.8 }
+  - { type: news, name: "Bangkok Post - World", url: "https://www.bangkokpost.com/rss/data/world.xml", region: asia, country: TH, lang: en, weight: 0.6 }
+  - { type: news, name: "Inquirer Global Nation", url: "https://globalnation.inquirer.net/feed", region: asia, country: PH, lang: en, weight: 0.6 }
+  - { type: news, name: "Philstar Headlines", url: "https://www.philstar.com/rss/headlines", region: asia, country: PH, lang: en, weight: 0.6 }
+
+  # ── Africa ──
+  - { type: news, name: "Africanews", url: "https://www.africanews.com/feed/rss", region: africa, country: CG, lang: en, weight: 0.8 }
+  - { type: news, name: "Mail & Guardian", url: "https://mg.co.za/rss/", region: africa, country: ZA, lang: en, weight: 0.8 }
+  - { type: news, name: "Daily Maverick", url: "https://www.dailymaverick.co.za/dmrss/", region: africa, country: ZA, lang: en, weight: 0.8 }
+  - { type: news, name: "Daily Nation (Kenya)", url: "https://nation.africa/kenya/rss.xml", region: africa, country: KE, lang: en, weight: 0.8 }
+  - { type: news, name: "Premium Times Nigeria", url: "https://www.premiumtimesng.com/feed", region: africa, country: NG, lang: en, weight: 0.6 }
+  - { type: news, name: "Punch Nigeria", url: "https://rss.punchng.com/v1/category/latest_news", region: africa, country: NG, lang: en, weight: 0.6 }
+  - { type: news, name: "The Africa Report", url: "https://www.theafricareport.com/feed/", region: africa, country: FR, lang: en, weight: 0.6 }
+
+  # ── Americas ──
+  - { type: news, name: "Buenos Aires Times", url: "https://www.batimes.com.ar/feed", region: americas, country: AR, lang: en, weight: 0.8 }
+  - { type: news, name: "Buenos Aires Herald", url: "https://buenosairesherald.com/feed", region: americas, country: AR, lang: en, weight: 0.6 }
+  - { type: news, name: "MercoPress", url: "https://en.mercopress.com/rss/", region: americas, country: UY, lang: en, weight: 0.6 }
+  - { type: news, name: "Latin America Reports", url: "https://latinamericareports.com/feed/", region: americas, country: CO, lang: en, weight: 0.6 }
+  - { type: news, name: "Mexico News Daily", url: "https://mexiconewsdaily.com/feed/", region: americas, country: MX, lang: en, weight: 0.6 }
+  - { type: news, name: "The Rio Times", url: "https://www.riotimesonline.com/feed/", region: americas, country: BR, lang: en, weight: 0.6 }
+  - { type: news, name: "The Globe and Mail - World", url: "https://www.theglobeandmail.com/arc/outboundfeeds/rss/category/world/", region: americas, country: CA, lang: en, weight: 0.8 }
+  - { type: news, name: "Global News - World", url: "https://globalnews.ca/world/feed/", region: americas, country: CA, lang: en, weight: 0.6 }
+
+  # ── Oceania ──
+  - { type: news, name: "ABC News Australia - Just In", url: "https://www.abc.net.au/news/feed/51120/rss.xml", region: oceania, country: AU, lang: en, weight: 0.8 }
+  - { type: news, name: "ABC News Australia - Top Stories", url: "https://www.abc.net.au/news/feed/45910/rss.xml", region: oceania, country: AU, lang: en, weight: 0.8 }
+  - { type: news, name: "SBS News - World", url: "https://www.sbs.com.au/news/topic/world/feed", region: oceania, country: AU, lang: en, weight: 0.8 }
+  - { type: news, name: "Guardian Australia", url: "https://www.theguardian.com/australia-news/rss", region: oceania, country: AU, lang: en, weight: 0.8 }
+  - { type: news, name: "RNZ News", url: "https://www.rnz.co.nz/rss/news.xml", region: oceania, country: NZ, lang: en, weight: 0.8 }
+  - { type: news, name: "RNZ Pacific", url: "https://www.rnz.co.nz/rss/pacific.xml", region: oceania, country: NZ, lang: en, weight: 0.6 }
+  - { type: news, name: "NZ Herald - World", url: "https://www.nzherald.co.nz/arc/outboundfeeds/rss/section/world/?outputType=xml", region: oceania, country: NZ, lang: en, weight: 0.6 }
+
+  # ── GDELT (geotagged global coverage; weighted below curated RSS) ──
+  - { type: gdelt, name: "GDELT", region: global, weight: 0.4 }
+
+  # ── Reddit (ranked by upvote velocity; OAuth when REDDIT_CLIENT_ID/SECRET are set, RSS fallback otherwise) ──
+  - { type: reddit, name: "r/worldnews", handle: worldnews, region: global, weight: 0.55, minVelocity: 2.0 }
+  - { type: reddit, name: "r/news", handle: news, region: americas, weight: 0.5, minVelocity: 2.0 }
+  - { type: reddit, name: "r/geopolitics", handle: geopolitics, region: global, weight: 0.5, minVelocity: 0.6 }
+  - { type: reddit, name: "r/europe", handle: europe, region: europe, weight: 0.5, minVelocity: 1.0 }
+  - { type: reddit, name: "r/greece", handle: greece, region: europe, weight: 0.5, minVelocity: 0.3 }
+  - { type: reddit, name: "r/ukraine", handle: ukraine, region: europe, weight: 0.5, minVelocity: 0.8 }
+  - { type: reddit, name: "r/MiddleEastNews", handle: MiddleEastNews, region: middle-east, weight: 0.45, minVelocity: 0.3 }
+  - { type: reddit, name: "r/asia", handle: asia, region: asia, weight: 0.45, minVelocity: 0.3 }
+  - { type: reddit, name: "r/africa", handle: africa, region: africa, weight: 0.45, minVelocity: 0.2 }
+  - { type: reddit, name: "r/LatinAmerica", handle: LatinAmerica, region: americas, weight: 0.45, minVelocity: 0.2 }
+  - { type: reddit, name: "r/China", handle: China, region: asia, weight: 0.45, minVelocity: 0.5 }
+  - { type: reddit, name: "r/india", handle: india, region: asia, weight: 0.45, minVelocity: 0.8 }
+
+  # ── Telegram public channels (always shown as UNVERIFIED unless verified: true; ranked by view velocity) ──
+  - { type: telegram, name: "BBC News Russian", handle: bbcrussian, region: europe, lang: ru, weight: 0.6, minVelocity: 30 }
+  - { type: telegram, name: "Kyiv Independent (TG)", handle: kyivindependent_official, region: europe, lang: en, weight: 0.6, minVelocity: 10 }
+  - { type: telegram, name: "NEXTA Live", handle: nexta_live, region: europe, lang: ru, weight: 0.45, minVelocity: 60 }
+  - { type: telegram, name: "Ukraine NOW", handle: UkraineNow, region: europe, lang: uk, weight: 0.45, minVelocity: 60 }
+  - { type: telegram, name: "Insider Paper", handle: insiderpaper, region: global, lang: en, weight: 0.4, minVelocity: 40 }
+  - { type: telegram, name: "Disclose.tv", handle: disclosetv, region: global, lang: en, weight: 0.25, minVelocity: 80, enabled: false }
+  - { type: telegram, name: "France 24 (TG)", handle: france24_en, region: global, lang: en, weight: 0.6, minVelocity: 5 }
+  - { type: telegram, name: "Al Jazeera English (TG)", handle: AJENews_Official, region: global, lang: en, weight: 0.6, minVelocity: 10 }
+  - { type: telegram, name: "The Guardian (TG)", handle: guardian, region: global, lang: en, weight: 0.6, minVelocity: 5 }
+  - { type: telegram, name: "WarTranslated", handle: wartranslated, region: europe, lang: en, weight: 0.4, minVelocity: 40 }
+  - { type: telegram, name: "Meduza Live", handle: meduzalive, region: europe, lang: ru, weight: 0.5, minVelocity: 60 }
+  - { type: telegram, name: "DD Geopolitics", handle: DDGeopolitics, region: global, lang: en, weight: 0.3, minVelocity: 60 }
+  - { type: telegram, name: "Intel Slava Z (pro-Kremlin)", handle: intelslava, region: europe, lang: en, weight: 0.2, minVelocity: 80, enabled: false }
+  - { type: telegram, name: "Rybar (pro-Kremlin)", handle: rybar, region: europe, lang: ru, weight: 0.2, minVelocity: 150, enabled: false }

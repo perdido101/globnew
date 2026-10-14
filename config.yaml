@@ -1,0 +1,143 @@
+# GLOBAL WIRE — all tunables live here. The server reads this file at start-up
+# (restart to apply). Sources live in sources.yaml (hot-reloaded).
+
+server:
+  port: 8787
+  # How many hours of items/clusters to keep hot in memory (and reload from Postgres on boot).
+  memoryWindowHours: 48
+  # Hard cap on items kept in memory (oldest are evicted first).
+  maxItemsInMemory: 6000
+
+ingest:
+  # Default poll interval per source type, seconds (a source can override with `intervalSec`).
+  intervalSec:
+    news: 300
+    gdelt: 900 # GDELT publishes every 15 min
+    reddit: 180
+    telegram: 240
+  # Ignore items published longer ago than this.
+  maxItemAgeHours: 24
+  requestTimeoutMs: 15000
+  userAgent: "GlobalWire/0.1 (+https://github.com/perdido101/globnew; news globe; contact via repo)"
+  # Exponential backoff after failures: base * 2^(failures-1), capped.
+  backoffBaseSec: 60
+  backoffMaxSec: 3600
+  # After this many consecutive failures a source is flagged "dead" (still retried at backoffMaxSec).
+  deadAfterFailures: 6
+  # Concurrent source fetches.
+  concurrency: 6
+  respectRobotsTxt: true
+
+reddit:
+  # Only posts whose (score / minutes since posting) reaches this are surfaced. A source can override with `minVelocity`.
+  minVelocity: 1.5
+  maxPostAgeHours: 8
+  listings: [new, rising]
+  limit: 50
+
+telegram:
+  # Views per minute since posting needed to surface a message. A source can override with `minVelocity`.
+  minVelocity: 15
+  maxPostAgeHours: 8
+
+gdelt:
+  # GDELT DOC 2.0 queries; each runs once per interval. Keep few: the API is rate-limited (≈1 req / 5 s).
+  queries:
+    - "sourcelang:english (theme:ARMEDCONFLICT OR theme:TERROR OR theme:NATURAL_DISASTER OR theme:ELECTION OR theme:PROTEST)"
+  timespan: 1h
+  maxRecords: 75
+  minGapMs: 6000
+  # From each 15-minute GDELT events export, take this many of the most-mentioned geolocated events
+  # (titles come from the article's Open Graph tags). The DOC API is often rate-limited; this keeps GDELT useful.
+  eventsPerUpdate: 25
+
+enrich:
+  # Fetch Open Graph tags for items without an image (and to fill og:site_name).
+  ogConcurrency: 4
+  ogTimeoutMs: 8000
+  # Thumbnails served by /img
+  thumbWidth: 240
+  thumbHeight: 160
+  thumbQuality: 72
+  imageCacheDir: data/cache/img
+  imageMaxBytes: 8000000
+
+llm:
+  # Used for location fallback, categorisation and importance hints. Pipeline degrades gracefully without ANTHROPIC_API_KEY.
+  # Bulk extraction model; switch to claude-haiku-5-5 for much lower cost.
+  model: claude-opus-5-5
+  effort: low
+  batchSize: 20
+  batchWaitMs: 4000
+  # Items wait at most this long for an LLM answer before falling back to heuristics.
+  timeoutMs: 45000
+  # Max LLM calls per hour (each call = one batch).
+  maxCallsPerHour: 120
+  # Gazetteer results below this confidence are re-checked by the LLM (when available).
+  geoConfidenceThreshold: 0.6
+
+geo:
+  dataDir: data/geonames
+  # Minimum population for single-word city matches that could also be English words.
+  ambiguousCityMinPop: 1000000
+
+cluster:
+  # Title similarity (0..1, Jaccard over normalised tokens/bigrams) to join a cluster.
+  similarity: 0.42
+  # Lower similarity accepted when both items are geolocated within `nearKm`.
+  nearSimilarity: 0.3
+  nearKm: 400
+  # Items must be within this time window of the cluster's latest item.
+  windowHours: 18
+
+score:
+  weights:
+    outlets: 26      # log-scaled number of outlets in cluster
+    source: 18       # lead source weight
+    velocity: 16     # reddit / telegram engagement velocity
+    breaking: 14
+    category: 12
+    recency: 14
+  categoryWeights:
+    conflict: 1.0
+    disaster: 1.0
+    politics: 0.85
+    economy: 0.75
+    health: 0.75
+    climate: 0.7
+    tech: 0.6
+    society: 0.55
+    culture: 0.4
+    sports: 0.35
+  # Recency half-life in minutes.
+  recencyHalfLifeMin: 120
+  # Velocity at which the velocity component saturates (per minute).
+  velocitySaturation: 30
+
+flow:
+  # Base release cadence (ms). Each tick releases the best queued cluster.
+  cadenceMs: 4500
+  # ± jitter fraction applied to each tick so the flow feels organic.
+  jitter: 0.35
+  # Cards visible at once on the globe; older releases collapse to dots.
+  maxVisibleCards: 12
+  # A released cluster keeps its card at least this long before it may collapse to a dot.
+  cardHoldMs: 45000
+  # Dot TTL after release, scaled linearly by importance between min and max.
+  dotTtlMinMs: 1200000
+  dotTtlMaxMs: 10800000
+  # Scores ≥ this (or breaking with ≥ breakingMinScore) jump the queue.
+  jumpScore: 85
+  breakingMinScore: 60
+  # Minimum gap between queue-jumps (ms).
+  jumpMinGapMs: 15000
+  # Only clusters first seen within this window are eligible for release.
+  candidateMaxAgeHours: 6
+  # Number of clusters seeded into a brand-new session so the globe is never empty.
+  initialSeed: 14
+  # Session state is kept this long after a client disconnects (so reconnects don't replay).
+  sessionTtlMs: 900000
+  statsIntervalMs: 10000
+
+ui:
+  densityHours: 12

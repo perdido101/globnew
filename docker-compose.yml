@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: globalwire
+      POSTGRES_PASSWORD: globalwire
+      POSTGRES_DB: globalwire
+    ports:
+      - "5433:5432"
+    volumes:
+      - gw_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U globalwire"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+volumes:
+  gw_pg:
