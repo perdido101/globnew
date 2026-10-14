@@ -14,6 +14,23 @@ export function connectStream(): () => void {
   let retry = 0;
   let timer: number | null = null;
   let closed = false;
+  let lastMessage = Date.now();
+
+  const reconnect = () => {
+    es?.close();
+    es = null;
+    if (closed) return;
+    retry++;
+    useStore.getState().setStatus(retry > 4 ? 'offline' : 'reconnecting');
+    const delay = Math.min(30_000, 1000 * 2 ** Math.min(retry - 1, 5)) * (0.75 + Math.random() * 0.5);
+    if (timer) clearTimeout(timer);
+    timer = window.setTimeout(open, delay);
+  };
+
+  // Watchdog: the server sends a heartbeat every 15 s; silence means the connection is dead (e.g. behind a proxy).
+  const watchdog = window.setInterval(() => {
+    if (es && Date.now() - lastMessage > 40_000) reconnect();
+  }, 5000);
 
   const open = () => {
     if (closed) return;
@@ -28,7 +45,9 @@ export function connectStream(): () => void {
     st.setStatus(retry === 0 ? 'connecting' : 'reconnecting');
     es = new EventSource(`/stream?filters=${filters}${session ? `&session=${encodeURIComponent(session)}` : ''}`);
 
+    lastMessage = Date.now();
     const handle = (e: MessageEvent<string>) => {
+      lastMessage = Date.now();
       let ev: StreamEvent;
       try {
         ev = JSON.parse(e.data) as StreamEvent;
@@ -58,16 +77,8 @@ export function connectStream(): () => void {
       }
     };
     for (const t of ['init', 'release', 'update', 'stats']) es.addEventListener(t, handle as EventListener);
-    es.onopen = () => useStore.getState().setStatus('live');
-    es.onerror = () => {
-      es?.close();
-      es = null;
-      if (closed) return;
-      retry++;
-      useStore.getState().setStatus(retry > 4 ? 'offline' : 'reconnecting');
-      const delay = Math.min(30_000, 1000 * 2 ** Math.min(retry - 1, 5)) * (0.75 + Math.random() * 0.5);
-      timer = window.setTimeout(open, delay);
-    };
+    es.addEventListener('ping', () => (lastMessage = Date.now()));
+    es.onerror = reconnect;
   };
 
   open();
@@ -99,6 +110,7 @@ export function connectStream(): () => void {
 
   return () => {
     closed = true;
+    clearInterval(watchdog);
     es?.close();
     if (timer) clearTimeout(timer);
     unsub();

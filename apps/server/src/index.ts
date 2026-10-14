@@ -131,7 +131,7 @@ async function main() {
     unwatch();
     scheduler.stop();
     flow.stop();
-    await app.close().catch(() => {});
+    await Promise.race([app.close().catch(() => {}), new Promise((r) => setTimeout(r, 3000))]);
     await repo.close().catch(() => {});
     await sql.end({ timeout: 2 }).catch(() => {});
     process.exit(0);

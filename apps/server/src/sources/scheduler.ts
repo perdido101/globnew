@@ -20,7 +20,8 @@ const INGESTERS: Record<SourceType, Ingester> = {
 };
 
 export interface SchedulerDeps {
-  onItems: (items: NormalisedItem[]) => void | Promise<void>;
+  /** Returns how many of the items were new. */
+  onItems: (items: NormalisedItem[]) => Promise<number>;
   loadHealth: () => Promise<Map<string, Partial<HealthState>>>;
   saveHealth: (sourceId: string, h: HealthState) => Promise<void>;
 }
@@ -97,11 +98,10 @@ export class SourceScheduler {
       h.consecutiveFailures = 0;
       h.lastError = items.length === 0 && raws.length === 0 && (s.type === 'news' || s.type === 'gdelt') ? 'empty response' : null;
       h.itemsLastFetch = items.length;
-      h.itemsTotal += items.length;
       h.emptyFetches = raws.length === 0 ? h.emptyFetches + 1 : 0;
       h.nextFetchAt = new Date(Date.now() + this.interval(s) * (0.9 + Math.random() * 0.2));
       log.debug({ source: s.id, items: items.length, ms: Date.now() - started }, 'fetched');
-      if (items.length) await this.deps.onItems(items);
+      if (items.length) h.itemsTotal += await this.deps.onItems(items);
     } catch (err) {
       h.consecutiveFailures += 1;
       h.lastError = (err as Error).message?.slice(0, 300) ?? String(err);

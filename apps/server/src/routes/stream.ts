@@ -20,6 +20,13 @@ export function parseFilters(raw: unknown): FlowFilters {
 }
 
 export function streamRoutes(app: FastifyInstance, flow: FlowEngine) {
+  const open = new Set<import('node:http').ServerResponse>();
+  // End streams on shutdown so clients reconnect immediately instead of waiting on a dead socket.
+  app.addHook('preClose', async () => {
+    for (const res of open) res.end();
+    open.clear();
+  });
+
   /** Server-Sent Events: `init` (current visible state) then `release` / `update` / `stats`. */
   app.get<{ Querystring: { session?: string; filters?: string } }>('/stream', (req, reply) => {
     let filters: FlowFilters = {};
@@ -43,9 +50,12 @@ export function streamRoutes(app: FastifyInstance, flow: FlowEngine) {
     const send = (ev: StreamEvent) => {
       res.write(`event: ${ev.type}\ndata: ${JSON.stringify(ev)}\n\n`);
     };
+    open.add(res);
     const sessionId = flow.connect(req.query.session ?? null, filters, send);
-    const ping = setInterval(() => res.write(`: ping ${Date.now()}\n\n`), 15_000);
+    // Named heartbeat (visible to EventSource) lets clients detect silently dead connections.
+    const ping = setInterval(() => res.write(`event: ping\ndata: ${Date.now()}\n\n`), 15_000);
     req.raw.on('close', () => {
+      open.delete(res);
       clearInterval(ping);
       flow.disconnect(sessionId);
     });

@@ -37,7 +37,8 @@ export class Pipeline {
     private gazetteer: Gazetteer | null,
   ) {}
 
-  async ingest(items: NormalisedItem[]): Promise<void> {
+  /** Queue items for processing; returns how many were new. */
+  async ingest(items: NormalisedItem[]): Promise<number> {
     this.stats.received += items.length;
     const fresh: NormalisedItem[] = [];
     for (const it of items) {
@@ -56,6 +57,7 @@ export class Pipeline {
     }
     // Items already in Postgres but evicted from memory are not re-processed.
     const known = await this.repo.knownIds(fresh.map((i) => i.id)).catch(() => new Set<string>());
+    let added = 0;
     for (const it of fresh) {
       if (known.has(it.id)) {
         this.stats.duplicates++;
@@ -63,6 +65,7 @@ export class Pipeline {
       }
       this.inProgress.add(it.id);
       this.stats.queue++;
+      added++;
       void this.limit(() => this.process(it))
         .catch((err) => log.warn({ err: (err as Error).message, url: it.url }, 'pipeline error'))
         .finally(() => {
@@ -70,6 +73,7 @@ export class Pipeline {
           this.stats.queue--;
         });
     }
+    return added;
   }
 
   async process(raw: NormalisedItem): Promise<Item> {

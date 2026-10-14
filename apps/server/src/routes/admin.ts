@@ -50,7 +50,7 @@ export function adminRoutes(app: FastifyInstance, scheduler: SourceScheduler, pi
   <td class="mono num">${v.itemsLastFetch}</td>
   <td class="mono num">${v.itemsTotal}</td>
   <td class="mono num">${v.consecutiveFailures}</td>
-  <td class="mono">${ago(v.nextFetchAt)}</td>
+  <td class="mono">${v.enabled ? ago(v.nextFetchAt) : '—'}</td>
   <td class="err">${esc(v.lastError ?? '')}</td>
 </tr>`,
       )
@@ -76,7 +76,7 @@ td{padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top} .num
 <div class="sum mono">${Object.entries(counts).map(([k, v]) => `<span>${esc(k.toUpperCase())} <b>${v}</b></span>`).join('')}
 <span>ITEMS RECEIVED <b>${p.received}</b></span><span>PROCESSED <b>${p.processed}</b></span><span>GEOLOCATED <b>${p.geolocated}</b></span>
 <span>GEO ${esc(JSON.stringify(p.geoByMethod))}</span><span>LLM <b>${llm.enabled ? `${llm.stats.calls} calls` : 'off'}</b></span><span>QUEUE <b>${p.queue}</b></span></div>
-<table><thead><tr><th>Status</th><th>Type</th><th>Source</th><th>Last fetch</th><th>Last OK</th><th>Last</th><th>Total</th><th>Fails</th><th>Next</th><th>Error</th></tr></thead>
+<table><thead><tr><th>Status</th><th>Type</th><th>Source</th><th>Last fetch</th><th>Last OK</th><th title="items in the last response">In feed</th><th title="new items ingested since tracking began">New total</th><th>Fails</th><th>Next</th><th>Error</th></tr></thead>
 <tbody>${rows}</tbody></table></body></html>`);
   });
 }
