@@ -147,7 +147,7 @@ export function loadGazetteer(dir: string): GazetteerData {
     ['Sahel', 'ML', 15.5, 0.0, 'admin'],
   ];
   for (const [n, cc, lat, lon, kind] of special) {
-    names.set(key(n), [{ kind, name: n, country: cc, lat, lon, pop: 2_000_000 }]);
+    names.set(key(n), [{ kind, name: n, country: cc, lat, lon, pop: 5_000_000 }]);
   }
 
   for (const [code, pts] of adminPts) {
@@ -271,9 +271,12 @@ export class Gazetteer {
         const k = key(surface);
         const dem = n <= 2 ? DEMONYMS[surface] : undefined;
         let places = this.data.names.get(k);
-        if (!places && /[^\p{Script=Latin}]/u.test(k) && k.length >= 5) {
-          // Light de-inflection for Greek / Cyrillic (Αθήνας → Αθήνα, Києва → Київ is out of reach).
-          places = this.data.names.get(k.slice(0, -1)) ?? (k.length >= 6 ? this.data.names.get(k.slice(0, -2)) : undefined);
+        if (!places && n === 1 && /[^\p{Script=Latin}]/u.test(k) && k.length >= 5) {
+          // Light de-inflection for Greek / Cyrillic (Αθήνας → Αθήνα, Одессе → Одесса). Only large places,
+          // since stripping endings turns ordinary words into small-town names ("Думаю" → "Дума").
+          const strip = this.data.names.get(k.slice(0, -1)) ?? (k.length >= 6 ? this.data.names.get(k.slice(0, -2)) : undefined);
+          const big = strip?.filter((p) => p.kind === 'country' || p.pop >= 400_000);
+          places = big?.length ? big : undefined;
         }
         if (!places) {
           if (dem) {
@@ -364,8 +367,8 @@ export class Gazetteer {
     const onlyDemonyms = inTop.length === 0;
     let confidence = 0.45 + 0.35 * share + (topW >= 3 ? 0.1 : 0) + (loc.precision === 'city' && namedCountries.has(topCc) ? 0.1 : 0);
     if (onlyDemonyms) confidence = Math.min(confidence, 0.45);
-    if (loc.precision === 'country') confidence = Math.min(confidence, 0.8);
     if (resolved.some((r) => r.place.country === topCc && r.weight === 3)) confidence += 0.05;
+    if (loc.precision === 'country') confidence = Math.min(confidence, 0.8);
     return {
       ...loc,
       confidence: Math.round(Math.min(0.95, confidence) * 100) / 100,
@@ -392,6 +395,8 @@ export class Gazetteer {
       if (city) best = city;
     }
     if (m.personLike && best.kind === 'city' && !namedCountries.has(best.country)) return null;
+    // Single-word regions ("Nord", "Centre", "Central") need context.
+    if (best.kind === 'admin' && !m.surface.includes(' ') && !namedCountries.has(best.country) && best.country !== regionHint && best.pop < 3_000_000) return null;
     if (m.ambiguous && best.kind === 'city' && !namedCountries.has(best.country) && best.pop < config.geo.ambiguousCityMinPop) return null;
     // Small single-word towns need context.
     if (best.kind === 'city' && !m.surface.includes(' ') && best.pop < 100_000 && !namedCountries.has(best.country) && best.country !== regionHint) return null;

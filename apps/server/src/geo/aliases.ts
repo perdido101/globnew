@@ -61,5 +61,5 @@ export const NON_PLACE_PHRASES = [
   'Manchester United', 'Manchester City', 'Paris Saint-Germain', 'Paris Hilton', 'Inter Milan', 'AC Milan', 'Boston Globe',
   'Chicago Tribune', 'Kansas City Chiefs', 'New York Post', 'Sydney Morning Herald', 'Buenos Aires Times', 'Toronto Star',
   'Dallas Cowboys', 'Michael Jordan', 'Jordan Peterson', 'Georgia Meloni', 'Giorgia Meloni', 'Turkey Day',
-  'South China Morning Post', 'Al Jazeera', 'Middle East Eye', 'Mail & Guardian', 'Atlanta Fed', 'New York Fed',
+  'South China Morning Post', 'Nord Stream', 'Turkish Stream', 'Power of Siberia', 'Al Jazeera', 'Middle East Eye', 'Mail & Guardian', 'Atlanta Fed', 'New York Fed',
 ];
